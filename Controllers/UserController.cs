@@ -28,4 +28,11 @@ public class UserController{
     }
 
 
+     [HttpPost]
+    [Route("[action]")]
+    public User AddRole(int userId,int roleId){
+        return userService.AddRole(userId,roleId);
+    }
+
+
 }
