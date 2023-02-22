@@ -7,5 +7,5 @@ public interface IUserService{
 
     String Login(userSignUpDto user);
 
-   
+    User AddRole(int userId,int roleId);
 }

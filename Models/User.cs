@@ -13,6 +13,6 @@ public class User
 
         public String name { get; set; }
 
-        public List<Role>? rolesList { get; set; }
+        public List<Role> rolesList { get; set; }
   
     }

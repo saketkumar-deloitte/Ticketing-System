@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CourseAPI;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Ticketing_System.Models;
 
@@ -17,43 +18,47 @@ public class UserService : IUserService
 
     public string Login(userSignUpDto user)
     {
-         var ur=userContext.Users.FirstOrDefault(u => u.email.ToLower() == user.email.ToLower());
+        var ur = userContext.Users.FirstOrDefault(u => u.email.ToLower() == user.email.ToLower());
 
-          if(ur==null)return "no user";
-         else if(verifyPassword(user,ur)){
+        if (ur == null) return "no user";
+        else if (verifyPassword(user, ur))
+        {
             return CreateToken(user);
-         }else{
+        }
+        else
+        {
             return "wrong password";
-         }
+        }
 
 
         throw new NotImplementedException();
     }
 
 
-      private string CreateToken(userSignUpDto user){
+    private string CreateToken(userSignUpDto user)
+    {
 
-         var secretKey = new SymmetricSecurityKey
-                    (Encoding.UTF8.GetBytes("Thisismysecretkey"));
-                    var signinCredentials = new SigningCredentials
-                   (secretKey, SecurityAlgorithms.HmacSha256);
-                    var jwtSecurityToken = new JwtSecurityToken(
-                        "https://localhost:7154",  
-                        "https://localhost:7154", 
-                        claims:new List<Claim>(){new Claim("roles","admin")},
-                        expires: DateTime.Now.AddMinutes(10),
-                        signingCredentials: signinCredentials
-                    );
-                    return new JwtSecurityTokenHandler().
-                    WriteToken(jwtSecurityToken);
-       
+        var secretKey = new SymmetricSecurityKey
+                   (Encoding.UTF8.GetBytes("Thisismysecretkey"));
+        var signinCredentials = new SigningCredentials
+       (secretKey, SecurityAlgorithms.HmacSha256);
+        var jwtSecurityToken = new JwtSecurityToken(
+            "https://localhost:7154",
+            "https://localhost:7154",
+            claims: new List<Claim>() { new Claim("roles", "admin") },
+            expires: DateTime.Now.AddMinutes(10),
+            signingCredentials: signinCredentials
+        );
+        return new JwtSecurityTokenHandler().
+        WriteToken(jwtSecurityToken);
+
     }
 
 
 
     public bool verifyPassword(userSignUpDto user, User ur)
     {
-        return ur.password==user.password;
+        return ur.password == user.password;
     }
 
     public string SignUp(userSignUpDto user)
@@ -65,12 +70,13 @@ public class UserService : IUserService
         }
         else
         {
-            User u = new User()
-            {
-                email = user.email,
-                password = user.password,
-                name = user.name
-            };
+            User u = new User();
+
+            u.email = user.email;
+            u.password = user.password;
+            u.name = user.name;
+            u.rolesList = new List<Role>();
+
             userContext.Add(u);
             userContext.SaveChanges();
             return "done";
@@ -84,5 +90,26 @@ public class UserService : IUserService
         if (userContext.Users.Any(u => u.email.ToLower() == username.ToLower()))
             return true;
         return false;
+    }
+
+    public User AddRole(int userId, int roleId)
+    {
+
+        var user = userContext.Users.FirstOrDefault(u => u.userId == userId);
+        var role = userContext.Roles.FirstOrDefault(u => u.roleId == roleId);
+
+        if (user.rolesList == null)
+        {
+            user.rolesList = new List<Role>();
+        }
+        user.rolesList.Add(role);
+
+
+
+        userContext.Update<User>(user);
+        userContext.SaveChanges();
+
+        return userContext.Users.Include(s => s.rolesList).ToList()[0];
+
     }
 }
