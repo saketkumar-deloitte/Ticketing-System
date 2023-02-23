@@ -1,4 +1,3 @@
-using CourseAPI;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +9,9 @@ builder.Services.AddDbContext<UserContext>(opts =>
 
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IRoleService,RoleService>();
+builder.Services.AddScoped<IIssueService,IssueService>();
+builder.Services.AddScoped<IProjectService,ProjectService>();
+
 
 builder.Services.AddControllers();
 
