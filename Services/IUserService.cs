@@ -2,10 +2,19 @@ using Ticketing_System.Models;
 
 public interface IUserService{
 
+    ResponseModel<User> SignUp(userSignUpDto user);
 
-    String SignUp(userSignUpDto user);
+    ResponseModel<User> Login(userloginDto user);
 
-    String Login(userSignUpDto user);
+    ResponseModel<User> DeleteUser(int userId);
 
-    User AddRole(int userId,int roleId);
+    ResponseModel<User> getUserDetail(int userId);
+
+    User updateUser(userSignUpDto user);
+
+    ResponseModel<User> AddRole(int userId,int roleId);
+
+    ResponseModel<List<User>> getAllUser();
+
+
 }

@@ -13,6 +13,8 @@ public class User
 
     public String name { get; set; }
 
+    public String designation { get; set; }
+
     public List<Role> rolesList { get; set; }
 
     public List<Project> projectsList { get; set; }
