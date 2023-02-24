@@ -10,5 +10,7 @@ public class userSignUpDto
 
     public String name { get; set; }
 
+    public String designation { get; set; }
+
 
 }

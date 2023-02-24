@@ -13,31 +13,25 @@ public class Issue
 
     public String description { get; set; }
 
-
     public String status { get; set; }
 
     public String Type { get; set; }
-
 
     public DateTime createDate { get; set; }
 
     public DateTime updateDate { get; set; }
 
+    [JsonIgnore]
     public Project Project { get; set; }
-
 
     public int ReporterId { get; set; }
     
     public User Reporter { get; set; }
 
-
-    
     public int AssigneeId { get; set; }
 
-    [JsonIgnore]
     public User Assignee { get; set; }
 
-    [JsonIgnore]
     public List<Label> listLabel { get; set; }
 
 
