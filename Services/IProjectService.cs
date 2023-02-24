@@ -1,10 +1,20 @@
 
 
-public interface IProjectService{
+public interface IProjectService
+{
 
-
-    Project AddProject(projectDto project);
 
     List<Project> getAllProject();
-    
+
+    Project getProjectDetailById(int id);
+
+    Project addProject(projectDto project);
+
+    Project updateProject(Project project);
+
+    String deleteProject(int projectId);
+   
+    List<Issue> getIssueByProjectId(int projectId);
+
+
 }

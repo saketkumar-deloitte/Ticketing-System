@@ -1,11 +1,9 @@
-
-
-
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
-public class ProjectController{
+public class ProjectController
+{
 
 
     private IProjectService projectService;
@@ -13,14 +11,14 @@ public class ProjectController{
 
     public ProjectController(IProjectService _projectService)
     {
-        projectService=_projectService;
+        projectService = _projectService;
     }
 
     [HttpPost]
     [Route("[action]")]
     public Project AddProject(projectDto project)
     {
-        return projectService.AddProject(project);
+        return projectService.addProject(project);
     }
 
 
@@ -30,5 +28,38 @@ public class ProjectController{
     {
         return projectService.getAllProject();
     }
-    
+
+
+    [HttpPut]
+    [Route("[action]")]
+    public Project updateProject(Project project)
+    {
+        return project;
+    }
+
+
+
+    [HttpDelete]
+    [Route("[action]")]
+    public String deleteProject(int projectId)
+    {
+        return projectService.deleteProject(projectId);
+    }
+
+
+    [HttpGet]
+    [Route("[action]")]
+    public Project getProjectDetailById(int id)
+    {
+        return projectService.getProjectDetailById(id);
+    }
+
+
+    [HttpGet]
+    [Route("[action]")]
+    public List<Issue> getIssueByProjectId(int projectId)
+    {
+        return projectService.getIssueByProjectId(projectId);
+    }
+
 }
