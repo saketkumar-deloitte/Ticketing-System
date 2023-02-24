@@ -15,6 +15,7 @@ public class Project
     [JsonIgnore]
     public User? creator { get; set; }
 
+     [JsonIgnore]
     public List<Issue> issueList { get; set; }
 
 

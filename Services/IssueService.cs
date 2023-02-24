@@ -1,6 +1,4 @@
 
-
-
 using Microsoft.EntityFrameworkCore;
 using Ticketing_System.Models;
 
@@ -20,17 +18,24 @@ public class IssueService : IIssueService
     {
         Project project = userContext.Find<Project>(issue.ProjectId);
 
+        User Reporter = userContext.Find<User>(issue.ReporterId);
+
+        User Assignee = userContext.Find<User>(issue.AssigneeId);
+
         Status s;
+        
 
 
         Issue issue1 = new Issue()
         {
             description = issue.description,
-            creator = project,
-            createDate = new DateTime(),
-            updateDate = new DateTime(),
+            Project = project,
+            createDate = DateTime.Now,
+            updateDate = DateTime.Now,
             status = Status.Open.ToString(),
-            Type = ((Type)issue.Type).ToString()
+            Type = ((Type)issue.Type).ToString(),
+            Reporter=Reporter,
+            Assignee=Assignee
         };
 
         userContext.Add(issue1);
@@ -44,7 +49,7 @@ public class IssueService : IIssueService
 
     public List<Issue> getAllIssue()
     {
-        return userContext.Issues.Include(s => s.creator).ToList();
+        return userContext.Issues.Include(s => s.Project).ToList();
     }
 
     public Issue UpdateIssueStatus(int issueId)

@@ -9,6 +9,8 @@ public class issueDto
 
     public int ReporterId { get; set; }
 
+    public int AssigneeId { get; set; }
+
     public int Type { get; set; }
 
 
