@@ -22,7 +22,7 @@ public class UserService : IUserService
         if (ur == null) return "no user";
         else if (verifyPassword(user, ur))
         {
-            return CreateToken(user);
+            return CreateToken(ur);
         }
         else
         {
@@ -34,8 +34,22 @@ public class UserService : IUserService
     }
 
 
-    private string CreateToken(userSignUpDto user)
+    private string CreateToken(User ur)
     {
+
+        User u =userContext.Users.Include(a=>a.rolesList).
+          FirstOrDefault(a=>a.userId==ur.userId);
+
+        Console.WriteLine(ur.email);   
+        List<Claim> claimList=new List<Claim>();
+
+        if(ur.rolesList==null||ur.rolesList.Count==0)return "please add role";
+
+        foreach (var item in u.rolesList)
+        {
+            claimList.Add(new Claim("roles",item.name));
+        }
+        
 
         var secretKey = new SymmetricSecurityKey
                    (Encoding.UTF8.GetBytes("Thisismysecretkey"));
@@ -44,7 +58,7 @@ public class UserService : IUserService
         var jwtSecurityToken = new JwtSecurityToken(
             "https://localhost:7154",
             "https://localhost:7154",
-            claims: new List<Claim>() { new Claim("roles", "admin") },
+            claims: claimList,
             expires: DateTime.Now.AddMinutes(10),
             signingCredentials: signinCredentials
         );

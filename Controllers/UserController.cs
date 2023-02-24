@@ -5,7 +5,7 @@ using Ticketing_System.Models;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController{
+public class UserController : ControllerBase{
 
     private IUserService userService;
 
@@ -17,8 +17,8 @@ public class UserController{
 
     [HttpPost]
     [Route("[action]")]
-    public String UserSignUp(userSignUpDto user){
-         return userService.SignUp(user);
+    public IActionResult UserSignUp(userSignUpDto user){
+         return Ok(userService.SignUp(user));
     }
 
     [HttpPost]
