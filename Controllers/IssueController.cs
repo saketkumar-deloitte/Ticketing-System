@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("[controller]")]
-public class IssueController
+public class IssueController : ControllerBase
 {
 
 
@@ -18,33 +18,63 @@ public class IssueController
 
     [HttpPost]
     [Route("[action]")]
-    public Issue AddIssue(issueDto issue)
+    public IActionResult AddIssue(issueDto issue)
     {
-        return issueService.addIssue(issue);
+        return Ok(issueService.addIssue(issue));
     }
 
 
     [HttpGet]
     [Route("[action]")]
-    public List<Issue> GetAllIssues()
+    public IActionResult GetAllIssues()
     {
-        return issueService.getAllIssue();
+        return Ok(issueService.getAllIssue());
+    }
+
+
+    [HttpPut]
+    [Route("[action]")]
+    public IActionResult UpdateIssueSatus(int issueId, int AssigneeId)
+    {
+        return Ok(issueService.UpdateIssueStatus(issueId, AssigneeId));
+    }
+
+
+    [HttpPut]
+    [Route("[action]")]
+    public IActionResult DownGradeIssueSatus(int issueId, int level, int AssigneeId)
+    {
+        return Ok(issueService.DownGradeIssueStatus(issueId, level, AssigneeId));
     }
 
 
     [HttpGet]
     [Route("[action]")]
-    public Issue UpdateIssueSatus(int issueId)
+    public IActionResult getIssueById(int issueId)
     {
-        return issueService.UpdateIssueStatus(issueId);
+        return Ok(issueService.getIssueById(issueId));
+    }
+
+    [HttpPost]
+    [Route("[action]")]
+    public IActionResult assignIssueToUser(int issueId, int userId)
+    {
+        return Ok(issueService.assignIssueToUser(issueId, userId));
+    }
+
+    [HttpDelete]
+    [Route("[action]")]
+    public IActionResult deleteIssue(int issueId)
+    {
+        return Ok(issueService.deleteIssue(issueId));
     }
 
 
-    [HttpGet]
+     [HttpPost]
     [Route("[action]")]
-    public Issue DownGradeIssueSatus(int issueId,int level)
+    public IActionResult AddLabel(Label label)
     {
-        return issueService.DownGradeIssueStatus(issueId,level);
+        return Ok(issueService.addlabel(label));
     }
 
 

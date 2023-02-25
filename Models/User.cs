@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Ticketing_System.Models;
@@ -17,13 +18,16 @@ public class User
 
     public List<Role> rolesList { get; set; }
 
+    [JsonIgnore]
     public List<Project> projectsList { get; set; }
 
 
     [JsonIgnore]
-    public Issue Assignee { get; set; }
+    [InverseProperty("Reporter")]
+    public virtual ICollection<Issue> Reporter { get; set; }
 
     [JsonIgnore]
-    public Issue Reporter { get; set; }
+    [InverseProperty("Assignee")]
+    public virtual ICollection<Issue> Assignee { get; set; }
 
 }

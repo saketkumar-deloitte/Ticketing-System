@@ -28,11 +28,11 @@ public class Issue
     
     public User Reporter { get; set; }
 
-    public int AssigneeId { get; set; }
+    public int? AssigneeId { get; set; }
 
-    public User Assignee { get; set; }
+    public User? Assignee { get; set; }
 
-    public List<Label> listLabel { get; set; }
+    public List<Label>? listLabel { get; set; }
 
 
 }

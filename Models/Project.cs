@@ -10,7 +10,7 @@ public class Project
 
     public String description { get; set; }
 
-    [JsonIgnore]
+    
     public User? creator { get; set; }
 
     public List<Issue> issueList { get; set; }

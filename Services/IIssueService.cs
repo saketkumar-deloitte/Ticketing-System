@@ -3,11 +3,19 @@
 public interface IIssueService{
     
 
-    Issue addIssue(issueDto issue);
+    ResponseModel<Issue> addIssue(issueDto issue);
 
-    List<Issue> getAllIssue();
+    ResponseModel<List<Issue>> getAllIssue();
 
-    Issue UpdateIssueStatus(int issueId);
+    ResponseModel<Issue> UpdateIssueStatus(int issueId,int userId);
 
-    Issue DownGradeIssueStatus(int issueId,int level);
+    ResponseModel<Issue> DownGradeIssueStatus(int issueId,int level,int userId);
+
+    ResponseModel<Issue> getIssueById(int issueId);
+
+    ResponseModel<Issue> assignIssueToUser(int issueId,int userId);
+
+    ResponseModel<Issue> deleteIssue(int issueId);
+    
+     ResponseModel<Label>? addlabel(Label label);
 }

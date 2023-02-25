@@ -20,7 +20,11 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Issue", b =>
                 {
-                    b.Property<int>("AssigneeId")
+                    b.Property<int>("issueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssigneeId")
                         .HasColumnType("int");
 
                     b.Property<int>("ReporterId")
@@ -37,9 +41,6 @@ namespace Ticketing_System.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("issueId")
-                        .HasColumnType("int");
-
                     b.Property<int>("projectId")
                         .HasColumnType("int");
 
@@ -50,17 +51,30 @@ namespace Ticketing_System.Migrations
                     b.Property<DateTime>("updateDate")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("AssigneeId", "ReporterId");
+                    b.HasKey("issueId");
 
-                    b.HasIndex("AssigneeId")
-                        .IsUnique();
+                    b.HasIndex("AssigneeId");
 
-                    b.HasIndex("ReporterId")
-                        .IsUnique();
+                    b.HasIndex("ReporterId");
 
                     b.HasIndex("projectId");
 
                     b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("IssueLabel", b =>
+                {
+                    b.Property<int>("issueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("listLabellabelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("issueId", "listLabellabelId");
+
+                    b.HasIndex("listLabellabelId");
+
+                    b.ToTable("IssueLabel");
                 });
 
             modelBuilder.Entity("Label", b =>
@@ -69,19 +83,11 @@ namespace Ticketing_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("issueAssigneeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("issueReporterId")
-                        .HasColumnType("int");
-
                     b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("labelId");
-
-                    b.HasIndex("issueAssigneeId", "issueReporterId");
 
                     b.ToTable("Labels");
                 });
@@ -166,15 +172,13 @@ namespace Ticketing_System.Migrations
             modelBuilder.Entity("Issue", b =>
                 {
                     b.HasOne("Ticketing_System.Models.User", "Assignee")
-                        .WithOne("Assignee")
-                        .HasForeignKey("Issue", "AssigneeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany("Assignee")
+                        .HasForeignKey("AssigneeId");
 
                     b.HasOne("Ticketing_System.Models.User", "Reporter")
-                        .WithOne("Reporter")
-                        .HasForeignKey("Issue", "ReporterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Reporter")
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project", "Project")
@@ -190,15 +194,19 @@ namespace Ticketing_System.Migrations
                     b.Navigation("Reporter");
                 });
 
-            modelBuilder.Entity("Label", b =>
+            modelBuilder.Entity("IssueLabel", b =>
                 {
-                    b.HasOne("Issue", "issue")
-                        .WithMany("listLabel")
-                        .HasForeignKey("issueAssigneeId", "issueReporterId")
+                    b.HasOne("Issue", null)
+                        .WithMany()
+                        .HasForeignKey("issueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("issue");
+                    b.HasOne("Label", null)
+                        .WithMany()
+                        .HasForeignKey("listLabellabelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -225,11 +233,6 @@ namespace Ticketing_System.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Issue", b =>
-                {
-                    b.Navigation("listLabel");
-                });
-
             modelBuilder.Entity("Project", b =>
                 {
                     b.Navigation("issueList");
@@ -237,11 +240,9 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Ticketing_System.Models.User", b =>
                 {
-                    b.Navigation("Assignee")
-                        .IsRequired();
+                    b.Navigation("Assignee");
 
-                    b.Navigation("Reporter")
-                        .IsRequired();
+                    b.Navigation("Reporter");
 
                     b.Navigation("projectsList");
                 });
