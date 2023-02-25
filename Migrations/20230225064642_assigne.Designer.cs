@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ticketing_System.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20230223170022_assignead3")]
-    partial class assignead3
+    [Migration("20230225064642_assigne")]
+    partial class assigne
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,11 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Issue", b =>
                 {
-                    b.Property<int>("AssigneeId")
+                    b.Property<int>("issueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssigneeId")
                         .HasColumnType("int");
 
                     b.Property<int>("ReporterId")
@@ -39,9 +43,6 @@ namespace Ticketing_System.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("issueId")
-                        .HasColumnType("int");
-
                     b.Property<int>("projectId")
                         .HasColumnType("int");
 
@@ -52,13 +53,11 @@ namespace Ticketing_System.Migrations
                     b.Property<DateTime>("updateDate")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("AssigneeId", "ReporterId");
+                    b.HasKey("issueId");
 
-                    b.HasIndex("AssigneeId")
-                        .IsUnique();
+                    b.HasIndex("AssigneeId");
 
-                    b.HasIndex("ReporterId")
-                        .IsUnique();
+                    b.HasIndex("ReporterId");
 
                     b.HasIndex("projectId");
 
@@ -71,10 +70,7 @@ namespace Ticketing_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("issueAssigneeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("issueReporterId")
+                    b.Property<int>("issueId")
                         .HasColumnType("int");
 
                     b.Property<string>("name")
@@ -83,9 +79,9 @@ namespace Ticketing_System.Migrations
 
                     b.HasKey("labelId");
 
-                    b.HasIndex("issueAssigneeId", "issueReporterId");
+                    b.HasIndex("issueId");
 
-                    b.ToTable("Label");
+                    b.ToTable("Labels");
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -144,6 +140,10 @@ namespace Ticketing_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("designation")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -164,15 +164,13 @@ namespace Ticketing_System.Migrations
             modelBuilder.Entity("Issue", b =>
                 {
                     b.HasOne("Ticketing_System.Models.User", "Assignee")
-                        .WithOne("Assignee")
-                        .HasForeignKey("Issue", "AssigneeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .WithMany("Assignee")
+                        .HasForeignKey("AssigneeId");
 
                     b.HasOne("Ticketing_System.Models.User", "Reporter")
-                        .WithOne("Reporter")
-                        .HasForeignKey("Issue", "ReporterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Reporter")
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Project", "Project")
@@ -192,7 +190,7 @@ namespace Ticketing_System.Migrations
                 {
                     b.HasOne("Issue", "issue")
                         .WithMany("listLabel")
-                        .HasForeignKey("issueAssigneeId", "issueReporterId")
+                        .HasForeignKey("issueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -235,11 +233,9 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Ticketing_System.Models.User", b =>
                 {
-                    b.Navigation("Assignee")
-                        .IsRequired();
+                    b.Navigation("Assignee");
 
-                    b.Navigation("Reporter")
-                        .IsRequired();
+                    b.Navigation("Reporter");
 
                     b.Navigation("projectsList");
                 });

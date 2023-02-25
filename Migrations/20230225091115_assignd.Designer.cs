@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ticketing_System.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20230223055447_issueupdate")]
-    partial class issueupdate
+    [Migration("20230225091115_assignd")]
+    partial class assignd
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,27 +26,72 @@ namespace Ticketing_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int?>("AssigneeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReporterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("createDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("creatorprojectId")
-                        .HasColumnType("int");
 
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("status")
+                    b.Property<int>("projectId")
                         .HasColumnType("int");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("updateDate")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("issueId");
 
-                    b.HasIndex("creatorprojectId");
+                    b.HasIndex("AssigneeId");
+
+                    b.HasIndex("ReporterId");
+
+                    b.HasIndex("projectId");
 
                     b.ToTable("Issues");
+                });
+
+            modelBuilder.Entity("IssueLabel", b =>
+                {
+                    b.Property<int>("issueId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("listLabellabelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("issueId", "listLabellabelId");
+
+                    b.HasIndex("listLabellabelId");
+
+                    b.ToTable("IssueLabel");
+                });
+
+            modelBuilder.Entity("Label", b =>
+                {
+                    b.Property<int>("labelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("labelId");
+
+                    b.ToTable("Labels");
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -105,6 +150,10 @@ namespace Ticketing_System.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("designation")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -124,13 +173,42 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Issue", b =>
                 {
-                    b.HasOne("Project", "creator")
-                        .WithMany("issueList")
-                        .HasForeignKey("creatorprojectId")
+                    b.HasOne("Ticketing_System.Models.User", "Assignee")
+                        .WithMany("Assignee")
+                        .HasForeignKey("AssigneeId");
+
+                    b.HasOne("Ticketing_System.Models.User", "Reporter")
+                        .WithMany("Reporter")
+                        .HasForeignKey("ReporterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("creator");
+                    b.HasOne("Project", "Project")
+                        .WithMany("issueList")
+                        .HasForeignKey("projectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assignee");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Reporter");
+                });
+
+            modelBuilder.Entity("IssueLabel", b =>
+                {
+                    b.HasOne("Issue", null)
+                        .WithMany()
+                        .HasForeignKey("issueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Label", null)
+                        .WithMany()
+                        .HasForeignKey("listLabellabelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Project", b =>
@@ -164,6 +242,10 @@ namespace Ticketing_System.Migrations
 
             modelBuilder.Entity("Ticketing_System.Models.User", b =>
                 {
+                    b.Navigation("Assignee");
+
+                    b.Navigation("Reporter");
+
                     b.Navigation("projectsList");
                 });
 #pragma warning restore 612, 618
