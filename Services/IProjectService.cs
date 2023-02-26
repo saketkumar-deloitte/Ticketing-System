@@ -4,17 +4,17 @@ public interface IProjectService
 {
 
 
-    List<Project> getAllProject();
+    ResponseModel<List<Project>> getAllProject();
 
-    Project getProjectDetailById(int id);
+    ResponseModel<Project> getProjectDetailById(int id);
 
-    Project addProject(projectDto project);
+    ResponseModel<Project> addProject(projectDto project);
 
-    Project updateProject(Project project);
+    ResponseModel<Project> updateProject(Project project);
 
-    String deleteProject(int projectId);
+    ResponseModel<Project> deleteProject(int projectId);
    
-    List<Issue> getIssueByProjectId(int projectId);
+    ResponseModel<List<Issue>> getIssueByProjectId(int projectId);
 
 
 }

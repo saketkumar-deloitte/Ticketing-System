@@ -9,61 +9,158 @@ public class ProjectService : IProjectService
     private UserContext userContext;
     public ProjectService(UserContext _userConext)
     {
-        userContext=_userConext;
+        userContext = _userConext;
     }
 
 
-    public List<Project> getAllProject()
+    public ResponseModel<List<Project>> getAllProject()
     {
-        return userContext.Set < Project > ().ToList();
-    }
+        var responseModel = new ResponseModel<List<Project>>();
 
-    public Project addProject(projectDto project)
-    {
-        User user = userContext.Find<User>(project.creatorId);
-
-        Project project1 = new Project()
+        try
         {
-            description = project.description,
-            creator = user
-            
-        };
+            responseModel.Data = userContext.Set<Project>().ToList();
+            responseModel.Messsage = "List of data";
 
-        userContext.Add(project1);
-        userContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
 
-        return project1;
+    public ResponseModel<Project> addProject(projectDto project)
+    {
+        var responseModel = new ResponseModel<Project>();
+
+        try
+        {
+            User user = userContext.Find<User>(project.creatorId);
+
+            if (user == null)
+            {
+                responseModel.Messsage = "user not found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                Project project1 = new Project()
+                {
+                    description = project.description,
+                    creator = user
+
+                };
+
+                userContext.Add(project1);
+                userContext.SaveChanges();
+
+                responseModel.Data = project1;
+                responseModel.Messsage = "data save";
+
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+
     }
 
 
-    public Project updateProject(Project project)
+    public ResponseModel<Project> updateProject(Project project)
     {
         throw new NotImplementedException();
     }
 
-    public string deleteProject(int projectId)
+    public ResponseModel<Project> deleteProject(int projectId)
     {
-        var project=userContext.Projects.FirstOrDefault(a=>a.projectId==projectId);
-        if(project==null){
-            return "No project is found";
+        var responseModel = new ResponseModel<Project>();
+
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == projectId);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                userContext.Projects.Remove(project);
+                userContext.SaveChanges();
+
+                responseModel.Messsage = "project  deleted";
+            }
         }
-
-
-        userContext.Projects.Remove(project);
-        userContext.SaveChanges();
-
-        return "Deleted success";
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
     }
 
 
-     public Project getProjectDetailById(int id)
+    public ResponseModel<Project> getProjectDetailById(int id)
     {
-          return userContext.Projects.Include(a=>a.issueList).
-          FirstOrDefault(a=>a.projectId==id);
+        var responseModel = new ResponseModel<Project>();
+
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == id);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+
+                responseModel.Data = userContext.Projects.Include(a => a.issueList).Include(a => a.creator).
+        FirstOrDefault(a => a.projectId == id);
+                responseModel.Messsage = "Data";
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
     }
 
-    public List<Issue> getIssueByProjectId(int projectId)
+    public ResponseModel<List<Issue>> getIssueByProjectId(int projectId)
     {
-          return getProjectDetailById(projectId).issueList;
+        var responseModel = new ResponseModel<List<Issue>>();
+
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == projectId);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                responseModel.Data = userContext.Projects.Include(a => a.issueList).
+         FirstOrDefault(a => a.projectId == projectId).issueList;
+
+                responseModel.Messsage = "Data";
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+
     }
+
+
 }

@@ -272,7 +272,7 @@ public class IssueService : IIssueService
             responseModel.IsSuccess = false;
         }
         return responseModel;
-        throw new NotImplementedException();
+       
     }
 
     public ResponseModel<Issue> deleteIssue(int issueId)
