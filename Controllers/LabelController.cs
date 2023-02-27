@@ -27,7 +27,7 @@ public class LabelController : ControllerBase
     [Route("[action]")]
     public IActionResult deleteLabel(int labelId)
     {
-        return Ok();
+        return Ok(labelService.deleteLabel(labelId));
     }
 
     [HttpGet]
@@ -35,5 +35,20 @@ public class LabelController : ControllerBase
     public IActionResult addLabelToIssue(int issueId, int labelId)
     {
         return Ok(labelService.addLabelToIssue(issueId, labelId));
+    }
+
+
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult getAllLabels()
+    {
+        return Ok(labelService.getAllLabels());
+    }
+
+    [HttpDelete]
+    [Route("[action]")]
+    public IActionResult deleteLabelToIssue(int issueId, int labelId)
+    {
+        return Ok(labelService.deleteLabelToIssue(issueId, labelId));
     }
 }

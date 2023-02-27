@@ -29,7 +29,7 @@ public class RoleController
 
     [HttpGet]
     [Route("[action]")]
-     [Authorize(Roles="standard")]
+    [Authorize(Roles="standard")]
     public List<Role> GetAllRoles()
     {
         return roleService.GetAllRoles();

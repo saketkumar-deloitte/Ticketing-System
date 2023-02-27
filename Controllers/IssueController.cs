@@ -34,17 +34,17 @@ public class IssueController : ControllerBase
 
     [HttpPut]
     [Route("[action]")]
-    public IActionResult UpdateIssueSatus(int issueId, int AssigneeId)
+    public IActionResult UpdateIssueSatus(int issueId)
     {
-        return Ok(issueService.UpdateIssueStatus(issueId, AssigneeId));
+        return Ok(issueService.UpdateIssueStatus(issueId));
     }
 
 
     [HttpPut]
     [Route("[action]")]
-    public IActionResult DownGradeIssueSatus(int issueId, int level, int AssigneeId)
+    public IActionResult DownGradeIssueSatus(int issueId, int level)
     {
-        return Ok(issueService.DownGradeIssueStatus(issueId, level, AssigneeId));
+        return Ok(issueService.DownGradeIssueStatus(issueId, level));
     }
 
 
@@ -70,12 +70,70 @@ public class IssueController : ControllerBase
     }
 
 
-     [HttpPost]
+    [HttpPost]
     [Route("[action]")]
     public IActionResult AddLabel(Label label)
     {
         return Ok(issueService.addlabel(label));
     }
 
+
+    [HttpPost]
+    [Route("[action]")]
+    public IActionResult addIssueInProject(int issueId, int projectId)
+    {
+        return Ok(issueService.addIssueInProject(issueId, projectId));
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult getIssueInProject(int issueId, int projectId)
+    {
+        return Ok(issueService.getIssueInProject(issueId, projectId));
+    }
+
+    [HttpPut]
+    [Route("[action]")]
+    public IActionResult updateIssueInProject(issueDto issuedto, int projectId, int issueId)
+    {
+        return Ok(issueService.updateIssueInProject(issuedto, projectId, issueId));
+    }
+
+    [HttpDelete]
+    [Route("[action]")]
+    public IActionResult deletedIssueInProject(int issueId, int projectId)
+    {
+        return Ok(issueService.deletedIssueInProject(issueId, projectId));
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult searchIssueBy(String title, String description)
+    {
+        return Ok(issueService.searchIssueBy(title, description));
+    } 
+    
+    
+   
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult getIssueGreaterThanCreatedDate(String currentDate){
+        return Ok(issueService.getIssueGreaterThanCreatedDate(DateTime.Parse(currentDate)));
+
+    }
+
+     [HttpGet]
+    [Route("[action]")]
+    public IActionResult getIssueLessThanCreatedDate(String currentDate){
+        return Ok(issueService.getIssueLessThanCreatedDate(DateTime.Parse(currentDate)));
+
+    }
+
+
+     [HttpGet]
+    [Route("[action]")]
+    public IActionResult getIssueByTypes(String type){
+        return Ok(issueService.getIssueByTypes(type));
+    }
 
 }

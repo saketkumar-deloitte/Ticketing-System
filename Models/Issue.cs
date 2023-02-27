@@ -11,6 +11,7 @@ public class Issue
     [Key]
     public int issueId { get; set; }
 
+    public String title { get; set; }
     public String description { get; set; }
 
     public String status { get; set; }
@@ -22,7 +23,7 @@ public class Issue
     public DateTime updateDate { get; set; }
 
     [JsonIgnore]
-    public Project Project { get; set; }
+    public Project? Project { get; set; }
 
     public int ReporterId { get; set; }
     
