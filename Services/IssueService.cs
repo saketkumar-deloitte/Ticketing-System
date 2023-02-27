@@ -22,17 +22,10 @@ public class IssueService : IIssueService
         try
         {
 
-            Project project = userContext.Find<Project>(issue.ProjectId);
-            User Reporter = userContext.Find<User>(issue.ReporterId);
 
+            var Reporter = userContext.Find<User>(issue.ReporterId);
 
-            if (project == null)
-            {
-                responseModel.Messsage = "No project found";
-                responseModel.IsSuccess = false;
-
-            }
-            else if (Reporter == null)
+            if (Reporter == null)
             {
                 responseModel.Messsage = "No reporter found";
                 responseModel.IsSuccess = false;
@@ -42,8 +35,8 @@ public class IssueService : IIssueService
 
                 Issue issue1 = new Issue()
                 {
+                    title = issue.title,
                     description = issue.description,
-                    Project = project,
                     createDate = DateTime.Now,
                     updateDate = DateTime.Now,
                     status = Status.Open.ToString(),
@@ -88,24 +81,19 @@ public class IssueService : IIssueService
         return responseModel;
     }
 
-    public ResponseModel<Issue> UpdateIssueStatus(int issueId, int userId)
+    public ResponseModel<Issue> UpdateIssueStatus(int issueId)
     {
 
         var responseModel = new ResponseModel<Issue>();
 
         try
         {
-            Issue issue = userContext.Find<Issue>(issueId);
-            User Assignee = userContext.Find<User>(userId);
+            var issue = userContext.Find<Issue>(issueId);
+           
 
             if (issue == null)
             {
                 responseModel.Messsage = "No Issue found";
-                responseModel.IsSuccess = false;
-            }
-            else if (Assignee == null)
-            {
-                responseModel.Messsage = "No user found";
                 responseModel.IsSuccess = false;
             }
             else
@@ -127,7 +115,6 @@ public class IssueService : IIssueService
                     value++;
                     issue.status = ((Status)value).ToString();
                     issue.updateDate = DateTime.Now;
-                    issue.Assignee = Assignee;
 
                     userContext.Update<Issue>(issue);
                     userContext.SaveChanges();
@@ -146,24 +133,19 @@ public class IssueService : IIssueService
     }
 
 
-    public ResponseModel<Issue> DownGradeIssueStatus(int issueId, int level, int userId)
+    public ResponseModel<Issue> DownGradeIssueStatus(int issueId, int level)
     {
 
         var responseModel = new ResponseModel<Issue>();
 
         try
         {
-            Issue issue = userContext.Find<Issue>(issueId);
-            User Assignee = userContext.Find<User>(userId);
+            var issue = userContext.Find<Issue>(issueId);
+           
 
             if (issue == null)
             {
                 responseModel.Messsage = "no issue found";
-                responseModel.IsSuccess = false;
-            }
-            else if (Assignee == null)
-            {
-                responseModel.Messsage = "No user found";
                 responseModel.IsSuccess = false;
             }
             else
@@ -185,9 +167,7 @@ public class IssueService : IIssueService
 
                     issue.status = ((Status)level).ToString();
                     issue.updateDate = DateTime.Now;
-                    issue.Assignee = Assignee;
-
-
+                   
                     userContext.Update<Issue>(issue);
                     userContext.SaveChanges();
 
@@ -211,7 +191,9 @@ public class IssueService : IIssueService
 
         try
         {
-            Issue issue = userContext.Find<Issue>(issueId);
+
+            var issue = userContext.Issues.Include(s => s.Reporter).Include(s => s.Assignee).
+                            Include(l => l.listLabel).FirstOrDefault(a => a.issueId == issueId);
 
             if (issue == null)
             {
@@ -239,8 +221,8 @@ public class IssueService : IIssueService
 
         try
         {
-            Issue issue = userContext.Find<Issue>(issueId);
-            User Assignee = userContext.Find<User>(userId);
+            var issue = userContext.Find<Issue>(issueId);
+            var Assignee = userContext.Find<User>(userId);
 
             if (issue == null)
             {
@@ -272,7 +254,7 @@ public class IssueService : IIssueService
             responseModel.IsSuccess = false;
         }
         return responseModel;
-       
+
     }
 
     public ResponseModel<Issue> deleteIssue(int issueId)
@@ -282,7 +264,7 @@ public class IssueService : IIssueService
 
         try
         {
-            Issue issue = userContext.Find<Issue>(issueId);
+            var issue = userContext.Find<Issue>(issueId);
 
             if (issue == null)
             {
@@ -311,17 +293,298 @@ public class IssueService : IIssueService
 
         try
         {
-          
-               Label l=new Label();
-               l.name=label.name;
-               l.issue=new List<Issue>();
 
-                userContext.Add(l);
+            Label l = new Label();
+            l.name = label.name;
+            l.issue = new List<Issue>();
+
+            userContext.Add(l);
+            userContext.SaveChanges();
+            responseModel.Messsage = "Deleted";
+
+            responseModel.Data = label;
+
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<Project> addIssueInProject(int issueId, int projectId)
+    {
+        var responseModel = new ResponseModel<Project>();
+
+        try
+        {
+
+            var issue = userContext.Find<Issue>(issueId);
+            var project = userContext.Find<Project>(projectId);
+
+
+            if (issue == null)
+            {
+                responseModel.Messsage = "No reporter found";
+                responseModel.IsSuccess = false;
+            }
+            else if (project == null)
+            {
+                responseModel.Messsage = "No project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+
+                if (project.issueList == null)
+                {
+                    project.issueList = new List<Issue>();
+                }
+
+                project.issueList.Add(issue);
+
+
+                userContext.Update<Project>(project);
                 userContext.SaveChanges();
-                responseModel.Messsage = "Deleted";
+                responseModel.Messsage = "issue added";
 
-                responseModel.Data=label;
+                responseModel.Data = project;
+
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<Issue> getIssueInProject(int issueId, int projectId)
+    {
+        var responseModel = new ResponseModel<Issue>();
+
+        try
+        {
+
+            var issue = userContext.Find<Issue>(issueId);
+            var project = userContext.Find<Project>(projectId);
+
+
+            if (issue == null)
+            {
+                responseModel.Messsage = "No issue found";
+                responseModel.IsSuccess = false;
+            }
+            else if (project == null)
+            {
+                responseModel.Messsage = "No project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+
+                responseModel.Messsage = "data";
+                responseModel.Data = issue;
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<Issue> updateIssueInProject(issueDto issuedto, int projectId, int issueId)
+    {
+        var responseModel = new ResponseModel<Issue>();
+
+        try
+        {
+
+            var issue = userContext.Find<Issue>(issueId);
+            var project = userContext.Find<Project>(projectId);
+
+
+            if (issue == null)
+            {
+                responseModel.Messsage = "No issue found";
+                responseModel.IsSuccess = false;
+            }
+            else if (project == null)
+            {
+                responseModel.Messsage = "No project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                if (issuedto.title != "string" && issuedto.title != "")
+                {
+                    issue.title = issuedto.title;
+                }
+
+                if (issuedto.description != "string" && issuedto.description != "")
+                {
+                    issue.description = issuedto.description;
+                }
+
+                if (issuedto.AssigneeId != 0)
+                {
+                    assignIssueToUser(issueId, issuedto.AssigneeId);
+                }
+
+                issue.updateDate=DateTime.Now;
+
+                userContext.Update<Issue>(issue);
+                userContext.SaveChanges();
+                responseModel.Messsage = "data";
+                responseModel.Data = issue;
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<Issue> deletedIssueInProject(int issueId, int projectId)
+    {
+        var responseModel = new ResponseModel<Issue>();
+
+        try
+        {
+
+            var issue = userContext.Find<Issue>(issueId);
+            var project = userContext.Find<Project>(projectId);
+
+            if (issue == null)
+            {
+                responseModel.Messsage = "No issue found";
+                responseModel.IsSuccess = false;
+            }
+            else if (project == null)
+            {
+                responseModel.Messsage = "No project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+
+                userContext.Remove<Issue>(issue);
+                userContext.SaveChanges();
+
+                responseModel.Messsage = "Issue Deleted";
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<Issue> searchIssueBy(string title, string description)
+    {
+        var responseModel = new ResponseModel<Issue>();
+
+        try
+        {
+            var issueTitle = userContext.Issues.FirstOrDefault(u => u.title.ToLower() == title.ToLower());
+            var issueDescription = userContext.Issues.FirstOrDefault(u => u.description.ToLower() == description.ToLower());
+
+
+            if (issueTitle == null)
+            {
+                responseModel.Messsage = "No title found with this value found";
+                responseModel.IsSuccess = false;
+            }
+            else if (issueDescription == null)
+            {
+                responseModel.Messsage = "No description found with this value found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+
+                if (issueDescription.title == title && issueTitle.description == description)
+                {
+                    responseModel.Messsage = "issue found";
+                    responseModel.Data = issueDescription;
+                }
+                else
+                {
+                    responseModel.Messsage = "No issue there";
+                    responseModel.IsSuccess = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<List<Issue>> getIssueGreaterThanCreatedDate(DateTime dc)
+    {
+         var responseModel = new ResponseModel<List<Issue>>();
+
+        try
+        {
+
+            var issue = userContext.Issues.
+            Where(d=>DateTime.Compare(dc,d.createDate)<=0).ToList();
+           
+                responseModel.Messsage = "data";
+                responseModel.Data = issue;
             
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<List<Issue>> getIssueLessThanCreatedDate(DateTime dc)
+    {
+          var responseModel = new ResponseModel<List<Issue>>();
+
+        try
+        {
+
+            var issue = userContext.Issues.
+            Where(d=>DateTime.Compare(dc,d.createDate)>=0).ToList();
+           
+                responseModel.Messsage = "data";
+                responseModel.Data = issue;
+            
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<List<Issue>> getIssueByTypes(string type)
+    {
+          var responseModel = new ResponseModel<List<Issue>>();
+
+        try
+        {
+            var issue = userContext.Issues.Where(a=>a.Type.ToLower()==type.ToLower()).ToList();
+           
+                responseModel.Messsage = "data";
+                responseModel.Data = issue;
         }
         catch (Exception ex)
         {

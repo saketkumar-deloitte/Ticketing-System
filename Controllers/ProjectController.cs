@@ -62,4 +62,16 @@ public class ProjectController : ControllerBase
         return Ok(projectService.getIssueByProjectId(projectId));
     }
 
+  [HttpGet]
+    [Route("[action]")]
+    public IActionResult getProjectByProjectIdAndAssigne(int projectId,String email){
+        return Ok(projectService.getProjectByProjectIdAndAssigne(projectId,email));
+    }
+
+    [HttpGet]
+    [Route("[action]")]
+    public IActionResult getProjectByProjectIdOrAssigne(int projectId,String email){
+        return Ok(projectService.getProjectByProjectIdOrAssigne(projectId,email));
+    }
+
 }

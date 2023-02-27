@@ -19,7 +19,7 @@ public class ProjectService : IProjectService
 
         try
         {
-            responseModel.Data = userContext.Set<Project>().ToList();
+            responseModel.Data =  userContext.Projects.Include(a => a.issueList).Include(a => a.creator).ToList();
             responseModel.Messsage = "List of data";
 
         }
@@ -162,5 +162,64 @@ public class ProjectService : IProjectService
 
     }
 
+    public ResponseModel<List<Issue>> getProjectByProjectIdAndAssigne(int projectId, string email)
+    {
+         var responseModel = new ResponseModel<List<Issue>>();
 
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == projectId);
+            var user=userContext.Users.FirstOrDefault(e=>e.email==email);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }else if(user==null){
+                 responseModel.Messsage = "Error no user  found with this email";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                responseModel.Data = userContext.Projects.Include(a => a.issueList.Where(a=>a.Assignee.email==email)).
+         FirstOrDefault(a => a.projectId == projectId).issueList;
+
+                responseModel.Messsage = "Data";
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
+
+    public ResponseModel<List<Issue>> getProjectByProjectIdOrAssigne(int projectId, string email)
+    {
+         var responseModel = new ResponseModel<List<Issue>>();
+
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == projectId);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+        
+                   responseModel.Data= userContext.Issues.Include(a=>a.Assignee).
+                    Where(p=>(p.Project.projectId==projectId)||(p.Assignee.email==email)).ToList();
+
+                responseModel.Messsage = "Data";
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
+    }
 }

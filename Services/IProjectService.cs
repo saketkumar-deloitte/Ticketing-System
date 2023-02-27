@@ -17,4 +17,9 @@ public interface IProjectService
     ResponseModel<List<Issue>> getIssueByProjectId(int projectId);
 
 
+   ResponseModel<List<Issue>> getProjectByProjectIdAndAssigne(int projectId,String email);
+
+   ResponseModel<List<Issue>> getProjectByProjectIdOrAssigne(int projectId,String email);
+
+
 }
