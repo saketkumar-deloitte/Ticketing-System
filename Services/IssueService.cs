@@ -69,7 +69,8 @@ public class IssueService : IIssueService
         try
         {
 
-            responseModel.Data = userContext.Issues.Include(s => s.Reporter).Include(s => s.Assignee).ToList();
+            responseModel.Data = userContext.Issues.Include(s => s.Reporter).Include(s => s.Assignee)
+            .Include(s => s.listLabel).ToList();
             responseModel.Messsage = "Success";
 
         }
@@ -553,7 +554,7 @@ public class IssueService : IIssueService
         return responseModel;
     }
 
-    public ResponseModel<List<Issue>> getIssueLessThanCreatedDate(DateTime dc)
+    public ResponseModel<List<Issue>> getIssueLessThanUpdateDate(DateTime dc)
     {
           var responseModel = new ResponseModel<List<Issue>>();
 
@@ -561,7 +562,7 @@ public class IssueService : IIssueService
         {
 
             var issue = userContext.Issues.
-            Where(d=>DateTime.Compare(dc,d.createDate)>=0).ToList();
+            Where(d=>DateTime.Compare(dc,d.updateDate)>=0).ToList();
            
                 responseModel.Messsage = "data";
                 responseModel.Data = issue;

@@ -33,7 +33,7 @@ public interface IIssueService
 
     ResponseModel<List<Issue>> getIssueGreaterThanCreatedDate(DateTime dc); 
 
-    ResponseModel<List<Issue>> getIssueLessThanCreatedDate(DateTime dc); 
+    ResponseModel<List<Issue>> getIssueLessThanUpdateDate(DateTime dc); 
 
 
      ResponseModel<List<Issue>> getIssueByTypes(String type); 

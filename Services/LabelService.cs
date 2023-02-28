@@ -133,33 +133,31 @@ public class LabelService : ILabelService
 
                 if (issue.listLabel == null || issue.listLabel.Count == 0)
                 {
-
+                    responseModel.Messsage = "label not found in issue ";
+                        responseModel.IsSuccess = false;
                 }
                 else
                 {
 
-                    bool help = true;
-                    // for (int i = 0; i < issue.listLabel.Count; i++)
-                    // {
-                    //     var temp = issue.listLabel[i];
-                    //     if (temp.labelId == labelId)
-                    //     {
-                    //         issue.listLabel.RemoveAt(i);
-                    //         userContext.Update<Issue>(issue);
-                    //         userContext.SaveChanges();
-                    //         help = true;
-                    //         break;
-                    //     }
-                    // }
+                    bool help = false;
+                    for (int i = 0; i < issue.listLabel.Count; i++)
+                    {
+                        var temp = issue.listLabel[i];
+                        if (temp.labelId == labelId)
+                        {
+                            issue.listLabel.RemoveAt(i);
+                            userContext.Update<Issue>(issue);
+                            userContext.SaveChanges();
+                            help = true;
+                            break;
+                        }
+                    }
 
                     if (help)
                     {
 
-                        issue.listLabel.Remove(label);
-                        userContext.Update<Issue>(issue);
-                        userContext.SaveChanges();
-
                         responseModel.Data = issue;
+                        responseModel.Messsage = "label deleted ";
                     }
                     else
                     {

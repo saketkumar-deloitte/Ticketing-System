@@ -10,7 +10,7 @@ public interface IUserService{
 
     ResponseModel<User> getUserDetail(int userId);
 
-    User updateUser(userSignUpDto user);
+    public  ResponseModel<User> updateUser(userSignUpDto user,int userId);
 
     ResponseModel<User> AddRole(int userId,int roleId);
 

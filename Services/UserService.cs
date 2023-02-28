@@ -238,9 +238,41 @@ public class UserService : IUserService
 
 
     // pending ask
-    public User updateUser(userSignUpDto user)
+    public  ResponseModel<User> updateUser(userSignUpDto user,int userId)
     {
-        throw new NotImplementedException();
+        var responseModel = new ResponseModel<User>();
+
+        try
+        {
+             var u = userContext.Users.FirstOrDefault(u => u.userId == userId);
+
+            // to avoide duplication 
+            if (UserExists(user.email)&&u!=null)
+            {
+                
+               
+
+                u.email = user.email;
+                u.password = user.password;
+                u.name = user.name;
+                u.designation = user.designation;
+
+                userContext.Update(u);
+                userContext.SaveChanges();
+
+                responseModel.Data = u;
+                responseModel.Messsage = "user Added Successfully";
+            }
+
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+
+
+        return responseModel;
     }
 
     public ResponseModel<List<User>> getAllUser()

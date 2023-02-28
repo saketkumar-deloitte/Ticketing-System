@@ -10,16 +10,16 @@ public interface IProjectService
 
     ResponseModel<Project> addProject(projectDto project);
 
-    ResponseModel<Project> updateProject(Project project);
+    ResponseModel<Project> updateProject(String description,int projectId);
 
     ResponseModel<Project> deleteProject(int projectId);
    
     ResponseModel<List<Issue>> getIssueByProjectId(int projectId);
 
 
-   ResponseModel<List<Issue>> getProjectByProjectIdAndAssigne(int projectId,String email);
+   ResponseModel<List<Issue>> getIssueByProjectIdAndAssigne(int projectId,String email);
 
-   ResponseModel<List<Issue>> getProjectByProjectIdOrAssigne(int projectId,String email);
+   ResponseModel<List<Issue>> getIssueByProjectIdOrAssigne(int projectId,String email);
 
 
 }
