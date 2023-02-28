@@ -489,40 +489,15 @@ public class IssueService : IIssueService
         return responseModel;
     }
 
-    public ResponseModel<Issue> searchIssueBy(string title, string description)
+    public ResponseModel<List<Issue>> searchIssueBy(string title, string description)
     {
-        var responseModel = new ResponseModel<Issue>();
+        var responseModel = new ResponseModel<List<Issue>>();
 
         try
         {
-            var issueTitle = userContext.Issues.FirstOrDefault(u => u.title.ToLower() == title.ToLower());
-            var issueDescription = userContext.Issues.FirstOrDefault(u => u.description.ToLower() == description.ToLower());
+            responseModel.Data = userContext.Issues.
+            Where(u => (u.title.ToLower() == title.ToLower())&& u.description.ToLower() == description.ToLower()).ToList();
 
-
-            if (issueTitle == null)
-            {
-                responseModel.Messsage = "No title found with this value found";
-                responseModel.IsSuccess = false;
-            }
-            else if (issueDescription == null)
-            {
-                responseModel.Messsage = "No description found with this value found";
-                responseModel.IsSuccess = false;
-            }
-            else
-            {
-
-                if (issueDescription.title == title && issueTitle.description == description)
-                {
-                    responseModel.Messsage = "issue found";
-                    responseModel.Data = issueDescription;
-                }
-                else
-                {
-                    responseModel.Messsage = "No issue there";
-                    responseModel.IsSuccess = false;
-                }
-            }
         }
         catch (Exception ex)
         {

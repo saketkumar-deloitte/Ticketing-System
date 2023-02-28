@@ -29,7 +29,7 @@ public interface IIssueService
 
     ResponseModel<Issue> deletedIssueInProject(int issueId, int projectId);
 
-    ResponseModel<Issue> searchIssueBy(String title, String description);
+    ResponseModel<List<Issue>> searchIssueBy(String title, String description);
 
     ResponseModel<List<Issue>> getIssueGreaterThanCreatedDate(DateTime dc); 
 
