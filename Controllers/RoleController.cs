@@ -7,32 +7,55 @@ namespace Ticketing_System.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)] 
-public class RoleController 
+public class RoleController : ControllerBase
 {
 
     private IRoleService roleService;
 
-    public RoleController(IRoleService _roleService)
+    private readonly ILogger logger;
+
+    public RoleController(IRoleService _roleService,ILoggerFactory _logger)
     {
         roleService = _roleService;
+        logger = _logger.CreateLogger("MyCategory");
     }
 
 
     [HttpPost]
     [Route("[action]")]
      [Authorize(Roles="admin")]
-    public Role AddRole(Role role)
+    public IActionResult AddRole(Role role)
     {
-        return roleService.AddRole(role);
+        logger.LogInformation("role add Method is called...........");
+
+        try
+        {
+             return Ok(roleService.AddRole(role));
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
+       
     }
 
 
     [HttpGet]
     [Route("[action]")]
-    [Authorize(Roles="standard")]
-    public List<Role> GetAllRoles()
+    [Authorize(Roles="admin,standard")]
+    public IActionResult GetAllRoles()
     {
-        return roleService.GetAllRoles();
+        logger.LogInformation("role get all Method is called...........");
+
+        try
+        {
+             return Ok(roleService.GetAllRoles());
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
+       
     }
 
 }

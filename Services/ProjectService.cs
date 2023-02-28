@@ -71,9 +71,34 @@ public class ProjectService : IProjectService
     }
 
 
-    public ResponseModel<Project> updateProject(Project project)
+    public ResponseModel<Project> updateProject(String description,int projectId)
     {
-        throw new NotImplementedException();
+        var responseModel = new ResponseModel<Project>();
+
+        try
+        {
+            var project = userContext.Projects.FirstOrDefault(a => a.projectId == projectId);
+            if (project == null)
+            {
+                responseModel.Messsage = "Error no project found";
+                responseModel.IsSuccess = false;
+            }
+            else
+            {
+                project.description=description;
+                userContext.Update<Project>(project);
+                userContext.SaveChanges();
+
+                responseModel.Messsage = "project  update";
+                responseModel.Data=project;
+            }
+        }
+        catch (Exception ex)
+        {
+            responseModel.Messsage = ex.Message;
+            responseModel.IsSuccess = false;
+        }
+        return responseModel;
     }
 
     public ResponseModel<Project> deleteProject(int projectId)
@@ -162,7 +187,7 @@ public class ProjectService : IProjectService
 
     }
 
-    public ResponseModel<List<Issue>> getProjectByProjectIdAndAssigne(int projectId, string email)
+    public ResponseModel<List<Issue>> getIssueByProjectIdAndAssigne(int projectId, string email)
     {
          var responseModel = new ResponseModel<List<Issue>>();
 
@@ -180,8 +205,8 @@ public class ProjectService : IProjectService
             }
             else
             {
-                responseModel.Data = userContext.Projects.Include(a => a.issueList.Where(a=>a.Assignee.email==email)).
-         FirstOrDefault(a => a.projectId == projectId).issueList;
+                responseModel.Data= userContext.Issues.Include(a=>a.Assignee).
+                    Where(p=>(p.Project.projectId==projectId)&&(p.Assignee.email==email)).ToList();
 
                 responseModel.Messsage = "Data";
             }
@@ -194,7 +219,7 @@ public class ProjectService : IProjectService
         return responseModel;
     }
 
-    public ResponseModel<List<Issue>> getProjectByProjectIdOrAssigne(int projectId, string email)
+    public ResponseModel<List<Issue>> getIssueByProjectIdOrAssigne(int projectId, string email)
     {
          var responseModel = new ResponseModel<List<Issue>>();
 
