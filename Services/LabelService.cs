@@ -190,6 +190,7 @@ public class LabelService : ILabelService
         }
         catch (Exception ex)
         {
+        
             responseModel.Messsage = ex.Message;
             responseModel.IsSuccess = false;
         }

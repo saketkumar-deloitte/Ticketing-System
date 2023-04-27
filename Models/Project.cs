@@ -5,6 +5,7 @@ using Ticketing_System.Models;
 public class Project
 {
 
+
     [Key]
     public int projectId { get; set; }
 
