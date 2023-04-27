@@ -13,7 +13,6 @@ public class Issue
 
     public String title { get; set; }
     public String description { get; set; }
-
     public String status { get; set; }
 
     public String Type { get; set; }
